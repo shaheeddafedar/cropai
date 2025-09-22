@@ -5,17 +5,24 @@ const Feedback = require('../models/Feedback');
 exports.getHomepage = async (req, res, next) => {
     try {
         const cropsRecommended = await Recommendation.countDocuments();
-        const farmersHelped = (await Recommendation.distinct('userId')).length;
-        res.render('index', {
-            pageTitle: 'Home',
-            stats: { farmers: farmersHelped, crops: cropsRecommended, accuracy: 95 }
+        
+        const distinctUserIds = await Recommendation.distinct('userId');
+        const farmersHelped = distinctUserIds.length;
+
+        const accuracyRate = 95;
+
+        res.render('index', { 
+            pageTitle: 'Home', 
+            stats: { 
+                farmers: farmersHelped, 
+                crops: cropsRecommended, 
+                accuracy: accuracyRate
+            } 
         });
+
     } catch (err) {
-        console.error("Error fetching homepage stats:", err);
-        res.render('index', {
-            pageTitle: 'Home',
-            stats: { farmers: 120, crops: 450, accuracy: 95 }
-        });
+        console.error("Could not fetch homepage stats:", err);
+        res.render('index', { pageTitle: 'Home', stats: { farmers: 100, crops: 50, accuracy: 95 } });
     }
 };
 

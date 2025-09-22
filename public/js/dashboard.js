@@ -67,5 +67,77 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+
+     async function displayRecentRecommendations() {
+        const recentRecsContainer = document.getElementById('recent-recommendations');
+        try {
+            const recommendations = await getRecentRecommendations(userId);
+            if (recommendations && recommendations.length > 0) {
+                recentRecsContainer.innerHTML = ''; 
+                recommendations.slice(0, 3).forEach(rec => { 
+                    const recElement = document.createElement('div');
+                    recElement.className = 'recommendation-item';
+                    recElement.innerHTML = `
+                        <p><strong>${rec.recommendedCrop}</strong> in ${rec.city}</p>
+                        <small>${new Date(rec.createdAt).toLocaleDateString()}</small>
+                    `;
+                    recentRecsContainer.appendChild(recElement);
+                });
+            }
+        } catch (error) {
+            console.error('Error loading recent recommendations:', error);
+        }
+    }
+
+    const chatWindow = document.querySelector('.chat-window');
+    const chatInput = document.getElementById('chat-query');
+    const askBtn = document.getElementById('ask-btn');
+
+    const dummyResponses = {
+        "hi": "Hello Sir, how can I help you...",
+        "hello": "Hi Sir, how can I help you...",
+        "fertilizer for wheat": "For wheat, an NPK ratio of 120:60:40 kg/ha is generally recommended.",
+        "best time to plant rice": "The ideal time for planting Kharif rice is June-July.",
+        "what is soil ph": "Soil pH is a measure of soil acidity or alkalinity. Most crops prefer a pH between 6.0 and 7.5.",                
+        "default": "I'm sorry, I can only answer predefined questions. Try asking about 'fertilizer for wheat' or 'best time to plant rice'."
+    };
+
+    const handleChat = () => {
+        const query = chatInput.value.trim().toLowerCase();
+        if (!query) return;
+
+        const userMessage = document.createElement('div');
+        userMessage.className = 'chat-message user';
+        userMessage.textContent = chatInput.value;
+        chatWindow.appendChild(userMessage);
+
+        let response = dummyResponses.default;
+        for (const key in dummyResponses) {
+            if (query.includes(key)) {
+                response = dummyResponses[key];
+                break;
+            }
+        }
+        
+        setTimeout(() => {
+            const botMessage = document.createElement('div');
+            botMessage.className = 'chat-message bot';
+            botMessage.textContent = response;
+            chatWindow.appendChild(botMessage);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }, 500);
+
+        chatInput.value = '';
+    };
+
+    askBtn.addEventListener('click', handleChat);
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleChat();
+    });
+
     populateStates();
+    displayRecentRecommendations();
 });
+
+//     populateStates();
+// });

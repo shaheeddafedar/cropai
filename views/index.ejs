@@ -33,14 +33,22 @@
             <a href="/dashboard" class="btn" id="hero-cta-btn">Get Your Recommendation Now</a>
         </div>
     </section>
-
     <section class="stats">
-        <div class="container">
-            <div class="stat-item"><h3>100+</h3><p>Farmers Helped</p></div>
-            <div class="stat-item"><h3>50+</h3><p>Crops Recommended</p></div>
-            <div class="stat-item"><h3>95%</h3><p>Accuracy Rate</p></div>
+    <div class="container">
+        <div class="stat-item">
+            <h3><%= stats.farmers %>+</h3>
+            <p>Farmers Helped</p>
         </div>
-    </section>
+        <div class="stat-item">
+            <h3><%= stats.crops %>+</h3>
+            <p>Crops Recommended</p>
+        </div>
+        <div class="stat-item">
+            <h3><%= stats.accuracy %>%</h3>
+            <p>Accuracy Rate</p>
+        </div>
+    </div>
+</section>
 
     <section class="features">
         <div class="container">

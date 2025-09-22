@@ -48,8 +48,6 @@ exports.getFeedbacks = async (req, res, next) => {
 
 exports.getAnalyticsData = async (req, res, next) => {
     const { year } = req.query;
-    // console.log(`Fetching analytics data for year: ${year}`);
-
     const allFarmerGrowth = [
         { label: 'Oct 2024', count: 85, year: '2024' },
         { label: 'Nov 2024', count: 89, year: '2024' },
