@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback - AgriMind</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/feedback.css">
+</head>
+<body class="feedback-page"> <header class="navbar">
+        <div class="container">
+            <a href="/" class="logo"><i class="fas fa-leaf"></i> AgriMind</a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li id="dashboard-link" style="display:none;"><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/analytics">Analytics</a></li>
+                <li><a href="/feedback" class="active">Feedback</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <main class="container page-content">
+        <div class="page-header">
+            <h1>Share Your Feedback</h1>
+            <p>Help us improve our service for farmers everywhere.</p>
+        </div>
+        
+        <div class="feedback-form-container">
+            <h3>Submit Your Feedback</h3>
+            <form id="feedback-form">
+                <div class="form-group">
+                    <label for="name">Your Name</label>
+                    <input type="text" id="name" required>
+                    <span class="error-message" id="name-error"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label>Rating</label>
+                    <div class="star-rating">
+                        <span class="star" data-value="1">☆</span>
+                        <span class="star" data-value="2">☆</span>
+                        <span class="star" data-value="3">☆</span>
+                        <span class="star" data-value="4">☆</span>
+                        <span class="star" data-value="5">☆</span>
+                    </div>
+                    <input type="hidden" id="rating" required>
+                    <span class="error-message" id="rating-error"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="comment">Comment</label>
+                    <textarea id="comment" rows="4" required></textarea>
+                    <span class="error-message" id="comment-error"></span>
+                </div>
+                
+                <button type="submit" class="btn">
+                    <span class="btn-text">Submit Feedback</span>
+                    <div class="btn-loading hidden">
+                        <i class="fas fa-spinner fa-spin"></i> Processing...
+                    </div>
+                </button>
+            </form>
+        </div>
+        
+        <div class="recent-feedback-section">
+            <h2>What Other Farmers Are Saying</h2>
+            
+            <div id="recent-feedback" class="feedback-grid">
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading feedback...</p>
+                </div>
+            </div>
+
+            <div class="pagination hidden" id="pagination">
+                <button id="prev-page" class="pagination-btn">Previous</button>
+                <span id="page-info"></span>
+                <button id="next-page" class="pagination-btn">Next</button>
+            </div>
+        </div>
+    </main>
+    
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 AgriMind. All Rights Reserved.</p>
+        </div>
+    </footer>
+    
+    <script src="/js/main.js"></script>
+    <script src="/js/feedback.js"></script>
+</body>
+</html>
