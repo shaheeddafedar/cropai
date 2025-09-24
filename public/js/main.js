@@ -1,4 +1,3 @@
-// Handles global UI elements like the login modal and navigation buttons.
 document.addEventListener('DOMContentLoaded', () => {
     const loginModalOverlay = document.getElementById('login-modal-overlay');
     const loginBtn = document.getElementById('login-btn');
