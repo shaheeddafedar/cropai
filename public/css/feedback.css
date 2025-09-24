@@ -181,8 +181,8 @@ body {
         }
 
         .star {
-            font-size: 2rem;
-            color: #ddd;
+            font-size: 3rem;
+            color: yellow;
             cursor: pointer;
             transition: color 0.2s, transform 0.2s;
             margin-right: 5px;
@@ -190,7 +190,7 @@ body {
 
         .star:hover,
         .star.active {
-            color: #ffc107;
+            color: yellow;
             transform: scale(1.1);
         }
 

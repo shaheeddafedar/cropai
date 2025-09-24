@@ -94,12 +94,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const askBtn = document.getElementById('ask-btn');
 
     const dummyResponses = {
-        "hi": "Hello Sir, how can I help you...",
-        "hello": "Hi Sir, how can I help you...",
-        "fertilizer for wheat": "For wheat, an NPK ratio of 120:60:40 kg/ha is generally recommended.",
-        "best time to plant rice": "The ideal time for planting Kharif rice is June-July.",
-        "what is soil ph": "Soil pH is a measure of soil acidity or alkalinity. Most crops prefer a pH between 6.0 and 7.5.",                
-        "default": "I'm sorry, I can only answer predefined questions. Try asking about 'fertilizer for wheat' or 'best time to plant rice'."
+    "hi": "Hello Sir, how can I help you with your farming today?",
+    "hello": "Hi Sir, how can I help you?",
+    "how are you": "I am an AI assistant, ready to help you with your questions!",
+    "what is your name": "You can call me AgriMind, your smart farming assistant.",
+    "thank you": "You're welcome! Is there anything else I can help you with?",
+    "thanks": "You're welcome! Do you have any other questions?",
+    // --- General Farming Knowledge ---
+    "what is npk": "NPK stands for Nitrogen (N), Phosphorus (P), and Potassium (K). They are the three most important nutrients for healthy plant growth.",
+    "what is crop rotation": "Crop rotation is the practice of planting different crops sequentially on the same plot of land to improve soil health, manage pests, and reduce erosion.",
+    "what is kharif season": "The Kharif season is the monsoon sowing season in India, typically starting in June. Rice, maize, and cotton are common Kharif crops.",
+    "what is rabi season": "The Rabi season is the winter sowing season in India, usually starting in November. Wheat, barley, and mustard are common Rabi crops.",
+    // --- Specific Crop Advice ---
+    "fertilizer for wheat": "For wheat, an NPK ratio of 120:60:40 kg/ha is generally recommended.",
+    "best time to plant rice": "The ideal time for planting Kharif rice is June-July, with the onset of the monsoon.",
+    "water for sugarcane": "Sugarcane is a water-intensive crop, requiring about 1500-2500 mm of water throughout its growing season.",
+    "common disease in cotton": "A common disease in cotton is Boll Rot, which can be managed by ensuring good drainage and proper spacing between plants.",
+    "fertilizer for cotton crop": "Use 150:60:60 NPK per hectare for cotton, with micronutrients like zinc if needed.",
+    "ideal spacing for maize": "Maintain 60 cm between rows and 20 cm between plants for maize.",
+    // --- Soil Health Advice ---
+    "what is soil ph": "Soil pH is a measure of soil acidity or alkalinity. Most crops prefer a neutral pH between 6.0 and 7.5.",
+    "how to increase soil ph": "To increase soil pH (make it less acidic), you can apply materials like lime (calcium carbonate). It's best to get a soil test to know the exact amount needed.",
+    "how to decrease soil ph": "To decrease soil pH (make it less alkaline), you can add organic matter like compost or use acidifying fertilizers like ammonium sulfate.",
+    // --- Fallback Message ---
+    "default": "I'm sorry, I can only answer predefined questions. Try asking about 'fertilizer for wheat' or 'what is crop rotation'."
     };
 
     const handleChat = () => {

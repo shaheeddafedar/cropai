@@ -2,9 +2,12 @@ const Recommendation = require('../models/Recommendation');
 const Feedback = require('../models/Feedback');
 
 const dummyCrops = [
-    { name: 'Rice', reason: 'High rainfall and suitable temperature make it ideal.' },
+   { name: 'Rice', reason: 'High rainfall and suitable temperature make it ideal.' },
     { name: 'Wheat', reason: 'Prefers cooler climates and moderate rainfall.' },
-    { name: 'Cotton', reason: 'Requires high temperature and fertile soil.' }
+    { name: 'Cotton', reason: 'Requires high temperature and fertile soil.' },
+    { name: 'Maize', reason: 'Thrives in well-drained soil with moderate rainfall and warm temperatures.' },
+    { name: 'Sugarcane', reason: 'Needs plenty of sunlight, water, and fertile loamy soil.' },
+    { name: 'Soybean', reason: 'Grows well in warm weather and requires moderate rainfall with well-drained soil.' }
 ];
 
 exports.postRecommendation = async (req, res, next) => {
