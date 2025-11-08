@@ -11,11 +11,18 @@
 <body class="feedback-page"> <header class="navbar">
         <div class="container">
             <a href="/" class="logo"><i class="fas fa-leaf"></i> AgriMind</a>
-            <ul class="nav-links">
+            <ul class="nav-links" id="nav-links">
                 <li><a href="/">Home</a></li>
-                <li id="dashboard-link" style="display:none;"><a href="/dashboard">Dashboard</a></li>
+                
+                <% if (isLoggedIn) { %>
+                    <li id="dashboard-link"><a href="/dashboard">Dashboard</a></li>
+                    <li><a href="/feedback">Feedback</a></li>
+                <% } else { %>
+                    <li id="dashboard-link" style="display:none;"><a href="/dashboard">Dashboard</a></li>
+                <% } %>
+                
+                <li><a href="/about">About</a></li>
                 <li><a href="/analytics">Analytics</a></li>
-                <li><a href="/feedback" class="active">Feedback</a></li>
             </ul>
         </div>
     </header>

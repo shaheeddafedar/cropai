@@ -1,12 +1,14 @@
 const express = require('express');
-const pageController = require('../controllers/pageController');
 const router = express.Router();
+const pageController = require('../controllers/pageController');
+const isAuth = require('../middleware/isAuth');
 
 router.get('/', pageController.getHomepage);
-router.get('/dashboard', pageController.getDashboard);
-router.get('/analytics', pageController.getAnalytics);
-router.get('/feedback', pageController.getFeedback);
 router.get('/about', pageController.getAbout);
-router.get('/recommend', pageController.getRecommendationPage);
+router.get('/analytics', pageController.getAnalytics);
+
+router.get('/dashboard', isAuth, pageController.getDashboard);
+router.get('/feedback', isAuth, pageController.getFeedback);
+router.get('/recommend', isAuth, pageController.getRecommendationPage);
 
 module.exports = router;

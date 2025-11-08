@@ -1,98 +1,242 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> AI Crop Recommendation</title>
+    <title>AI Crop Recommendation | AgriMind</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/css/style.css">
 </head>
+
 <body>
     <header class="navbar">
         <div class="container">
             <a href="/" class="logo"><i class="fas fa-leaf"></i> AgriMind</a>
-            <ul class="nav-links">
+
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <ul class="nav-links" id="nav-links">
                 <li><a href="/">Home</a></li>
-                <li id="dashboard-link" style="display:none;"><a href="/dashboard">Dashboard</a></li>
-                <li><a href="/about">About</a></li>
-                <li><a href="/analytics">Analytics</a></li>
-                <li><a href="/feedback">Feedback</a></li>
+
+                <% if (isLoggedIn) { %>
+                    <li id="dashboard-link"><a href="/dashboard">Dashboard</a></li>
+                    <li><a href="/feedback">Feedback</a></li>
+                    <% } else { %>
+                        <li id="dashboard-link" style="display:none;"><a href="/dashboard">Dashboard</a></li>
+                        <% } %>
+
+                            <li><a href="/about">About</a></li>
+                            <li><a href="/analytics">Analytics</a></li>
             </ul>
+
             <div class="auth-buttons">
-                <a href="#" class="btn btn-secondary" id="login-btn">Sign In</a>
-                <a href="#" class="btn" id="register-btn">Get Started</a>
+                <% if (isLoggedIn) { %>
+                    <form action="/logout" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-secondary">Logout</button>
+                    </form>
+                    <% } else { %>
+                        <a href="#" class="btn btn-secondary" id="login-btn">Log In</a>
+                        <a href="/signup" class="btn" id="register-btn">Sign Up</a>
+                        <% } %>
             </div>
         </div>
     </header>
 
     <section class="hero">
         <div class="container">
-            <h1>Intelligent Crop Recommendations for Modern Farmers</h1>
-            <p>Leverage AI to maximize yield and increase profits.
-            </p>
-            <a href="/dashboard" class="btn" id="hero-cta-btn">Get Your Recommendation Now</a>
+            <div class="hero-content">
+                <h1>Intelligent Crop Recommendations for Modern Farmers</h1>
+                <p>Leverage AI to maximize yield and increase profits with data-driven insights tailored to your farm's
+                    unique conditions.</p>
+                <a href="/dashboard" class="btn btn-large" id="hero-cta-btn">Get Your Recommendation Now</a>
+            </div>
+            <div class="hero-visual">
+                <div class="floating-card">
+                    <i class="fas fa-seedling"></i>
+                    <h4>Smart Farming</h4>
+                    <p>AI-powered insights</p>
+                </div>
+                <div class="floating-card">
+                    <i class="fas fa-chart-line"></i>
+                    <h4>Higher Yields</h4>
+                    <p>Optimized crop selection</p>
+                </div>
+            </div>
         </div>
     </section>
+
     <section class="stats">
-    <div class="container">
-        <div class="stat-item">
-            <h3><%= stats.farmers %>+</h3>
-            <p>Farmers Helped</p>
+        <div class="container">
+            <div class="stat-item">
+                <i class="fas fa-users"></i>
+                <h3>
+                    <%= stats.farmers %>+
+                </h3>
+                <p>Farmers Helped</p>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-tractor"></i>
+                <h3>
+                    <%= stats.crops %>+
+                </h3>
+                <p>Crops Recommended</p>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-bullseye"></i>
+                <h3>
+                    <%= stats.accuracy %>%
+                </h3>
+                <p>Accuracy Rate</p>
+            </div>
         </div>
-        <div class="stat-item">
-            <h3><%= stats.crops %>+</h3>
-            <p>Crops Recommended</p>
-        </div>
-        <div class="stat-item">
-            <h3><%= stats.accuracy %>%</h3>
-            <p>Accuracy Rate</p>
-        </div>
-    </div>
-</section>
+    </section>
 
     <section class="features">
         <div class="container">
             <h2>Our Core Features</h2>
+            <p class="section-subtitle">Everything you need to make informed decisions for your farm</p>
             <div class="features-grid">
-                <a href="/dashboard"  class="feature-card-link"><div class="feature-card"><i class="fas fa-brain"></i><h3>AI Recommendation</h3><p>Data-driven suggestions for your farm.</p></div></a>
-                <a href="/feedback" class="feature-card-link"><div class="feature-card"><i class="fas fa-language"></i><h3>Feedback Support</h3><p>Let us know how we can serve you bette </p></div></a>
-                <a href="/dashboard" class="feature-card-link"><div class="feature-card"><i class="fas fa-comments"></i><h3>Chat Support</h3><p>Instant AI chat support for your queries.</p></div></a>
+                <a href="/dashboard" class="feature-card-link">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3>AI Recommendation</h3>
+                        <p>Data-driven suggestions for your farm based on soil, weather, and market conditions.</p>
+                        <div class="feature-cta">Try Now <i class="fas fa-arrow-right"></i></div>
+                    </div>
+                </a>
+                <a href="/feedback" class="feature-card-link">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-language"></i>
+                        </div>
+                        <h3>Feedback Support</h3>
+                        <p>Let us know how we can serve you better and improve our recommendations.</p>
+                        <div class="feature-cta">Provide Feedback <i class="fas fa-arrow-right"></i></div>
+                    </div>
+                </a>
+                <a href="/dashboard" class="feature-card-link">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h3>Chat Support</h3>
+                        <p>Instant AI chat support for your queries about crops, soil, and farming techniques.</p>
+                        <div class="feature-cta">Chat Now <i class="fas fa-arrow-right"></i></div>
+                    </div>
+                </a>
+                <a href="/about" class="feature-card-link">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>About AgriMind</h3>
+                        <p>Learn more about our mission, our team, and our commitment to helping farmers succeed.</p>
+                        <div class="feature-cta">Learn More <i class="fas fa-arrow-right"></i></div>
+                    </div>
+                </a>
+
+                <a href="/analytics" class="feature-card-link">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <h3>Data Analytics</h3>
+                        <p>Explore interactive charts and see real-time insights on crop recommendations and trends.</p>
+                        <div class="feature-cta">View Analytics <i class="fas fa-arrow-right"></i></div>
+                    </div>
+                </a>
             </div>
         </div>
     </section>
-<footer class="footer">
-    <div class="container">
-        <p>&copy; 2025 AgriMind. All Rights Reserved.</p>
-        <p>Contact us: support@agrimind.dev</p>
-        <!-- <div class="social-icons">
-            <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
-            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-            <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="/" class="logo"><i class="fas fa-leaf"></i> AgriMind</a>
+                    <p>Empowering farmers with AI-driven agricultural insights.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/dashboard">Dashboard</a></li>
+                            <li><a href="/about">About</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Resources</h4>
+                        <ul>
+                            <li><a href="/analytics">Analytics</a></li>
+                            <li><a href="/feedback">Feedback</a></li>
+                            <li><a href="#">Help Center</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Contact</h4>
+                        <ul>
+                            <li><a href="mailto:support@agrimind.dev">support@agrimind.dev</a></li>
+                            <li><a href="tel:+911234567890">+91 123 456 7890</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 AgriMind. All Rights Reserved.</p>
+                <div class="social-icons">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
         </div>
-    </div> -->
-</footer>
+    </footer>
+
     <div id="login-modal-overlay" class="login-modal-overlay hidden">
         <div class="login-modal">
             <button class="close-btn">&times;</button>
             <h2>Welcome to AgriMind</h2>
             <p>Sign in to continue to your dashboard.</p>
-            <button class="social-btn google-btn" id="google-login-btn"><i class="fab fa-google"></i><span>Sign in with Google</span></button>
-            <div class="divider"><span>OR</span></div>
-            <form id="email-login-form" class="modal-form">
-                <input type="email" placeholder="you@example.com" required>
-                <button type="submit" class="btn">Continue with Email</button>
-            </form>
-            <div class="divider"></div>
-            <form id="phone-login-form" class="modal-form">
-                <input type="tel" id="phone" placeholder="+91 98765 43210" required>
-                <div class="otp-group hidden"><input type="text" id="otp" placeholder="Enter 6-digit OTP"></div>
-                <button type="submit" class="btn" id="phone-submit-btn">Send OTP</button>
-            </form>
+
+            <% if (errorMessage) { %>
+                <div class="error-message">
+                    <%= errorMessage %>
+                </div>
+                <% } %>
+
+                    <form id="email-login-form" class="modal-form" method="POST" action="/login">
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" placeholder="you@example.com" required>
+                            <br>
+                            <input type="password" id="password" name="password" placeholder="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-full">Continue with Email</button>
+                    </form>
+
+                    <div class="divider"></div>
+                    <p class="terms-notice">By continuing, you agree to our <a href="#">Terms of Service</a> and <a
+                            href="#">Privacy Policy</a>.</p>
         </div>
     </div>
-    
-    <script src="/js/main.js"></script>
-</body>
-</html>
 
+    <script src="/js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const serverError = '<%= errorMessage %>';
+
+            if (serverError && serverError !== 'null' && serverError.trim() !== '') {
+                showLoginModal();
+            }
+        });
+    </script>
+</body>
+
+</html>

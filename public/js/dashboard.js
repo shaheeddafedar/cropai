@@ -1,19 +1,57 @@
 document.addEventListener('DOMContentLoaded', () => {
-    if (localStorage.getItem('isLoggedIn') !== 'true') {
-        alert('You must be logged in to view the dashboard.');
-        window.location.href = '/';
-        return;
-    }
-
-    const userId = localStorage.getItem('userId');
     const stateSelect = document.getElementById('state');
     const citySelect = document.getElementById('city');
     const form = document.getElementById('recommendation-form');
-    let locationsData = [];
+    let locationsData = []; 
+
+    const recommendationsContainer = document.getElementById('recent-recommendations');
+    const fetchBtn = document.getElementById('fetch-farm-details-btn');
+    const farmIdInput = document.getElementById('farmId');
+
+    async function loadRecentRecommendations() {
+        if (!recommendationsContainer) return;
+
+        if (typeof USER_ID === 'undefined' || !USER_ID) {
+            recommendationsContainer.innerHTML = '<p>Could not find user session.</p>';
+            return;
+        }
+
+        try {
+            const recommendations = await getRecentRecommendations(USER_ID);
+            
+            if (!recommendations || recommendations.length === 0) {
+                recommendationsContainer.innerHTML = '<p>You have no recent recommendations.</p>';
+                return;
+            }
+
+            recommendationsContainer.innerHTML = '';
+            
+            recommendations.forEach(rec => {
+                const card = document.createElement('div');
+                card.className = 'recommendation-card'; 
+                
+                const formattedDate = new Date(rec.createdAt).toLocaleDateString('en-IN', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                });
+                
+                card.innerHTML = `
+                    <strong>${rec.recommendedCrop}</strong>
+                    <span>${formattedDate}</span>
+                `;
+                recommendationsContainer.appendChild(card);
+            });
+
+        } catch (error) {
+            console.error('Error loading recommendations:', error);
+            recommendationsContainer.innerHTML = '<p>Could not load recommendations.</p>';
+        }
+    }
 
     async function populateStates() {
         try {
-            locationsData = await getLocations();
+            locationsData = await getLocations(); 
             locationsData.forEach(location => {
                 const option = document.createElement('option');
                 option.value = location.state;
@@ -25,9 +63,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    stateSelect.addEventListener('change', () => {
-        citySelect.innerHTML = '<option value="">Select City</option>';
-        const selectedState = locationsData.find(s => s.state === stateSelect.value);
+    function populateCities(selectedStateName) {
+        citySelect.innerHTML = '<option value="">Select City</option>'; 
+        const selectedState = locationsData.find(s => s.state === selectedStateName);
         if (selectedState) {
             citySelect.disabled = false;
             selectedState.cities.forEach(city => {
@@ -39,12 +77,23 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             citySelect.disabled = true;
         }
+    }
+
+    stateSelect.addEventListener('change', () => {
+        populateCities(stateSelect.value);
     });
 
+    // --- FEATURE 3: Submit Main Form ---
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
+
+        if (typeof USER_ID === 'undefined' || !USER_ID) {
+            alert('Error: User session not found. Please log in again.');
+            return;
+        }
+
         const formData = {
-            userId: userId,
+            userId: USER_ID,
             soilPh: document.getElementById('soilPh').value,
             moisture: document.getElementById('moisture').value,
             nitrogen: document.getElementById('nitrogen').value,
@@ -58,6 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
             city: document.getElementById('city').value,
             pastCrop: document.getElementById('pastCrop').value,
         };
+        
         const result = await submitRecommendationRequest(formData);
         if (result) {
             localStorage.setItem('recommendationResult', JSON.stringify(result));
@@ -67,96 +117,52 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // --- FEATURE 4: Fetch Farm ID Button ---
+    fetchBtn.addEventListener('click', async () => {
+        const farmId = farmIdInput.value.trim().toUpperCase();
+        if (!farmId) {
+            alert('Please enter a Farm ID.');
+            return;
+        }
 
-     async function displayRecentRecommendations() {
-        const recentRecsContainer = document.getElementById('recent-recommendations');
         try {
-            const recommendations = await getRecentRecommendations(userId);
-            if (recommendations && recommendations.length > 0) {
-                recentRecsContainer.innerHTML = ''; 
-                recommendations.slice(0, 3).forEach(rec => { 
-                    const recElement = document.createElement('div');
-                    recElement.className = 'recommendation-item';
-                    recElement.innerHTML = `
-                        <p><strong>${rec.recommendedCrop}</strong> in ${rec.city}</p>
-                        <small>${new Date(rec.createdAt).toLocaleDateString()}</small>
-                    `;
-                    recentRecsContainer.appendChild(recElement);
-                });
+            fetchBtn.disabled = true;
+            fetchBtn.textContent = 'Fetching...';
+            
+            const response = await fetch(`/api/farm/${farmId}`);
+            
+            if (!response.ok) {
+                if (response.status === 404) {
+                    alert('Farm ID not found. Please check the ID and try again.');
+                } else {
+                    throw new Error('Failed to fetch farm data.');
+                }
+                return;
             }
+
+            const farmData = await response.json();
+            
+            document.getElementById('soilPh').value = farmData.soilPh;
+            document.getElementById('moisture').value = farmData.moisture;
+            document.getElementById('nitrogen').value = farmData.nitrogen;
+            document.getElementById('phosphorus').value = farmData.phosphorus;
+            document.getElementById('potassium').value = farmData.potassium;
+            document.getElementById('temperature').value = farmData.temperature;
+            document.getElementById('rainfall').value = farmData.rainfall;
+            document.getElementById('state').value = farmData.state;
+            
+            populateCities(farmData.state);
+            document.getElementById('city').value = farmData.city;
+
         } catch (error) {
-            console.error('Error loading recent recommendations:', error);
+            console.error('Error fetching farm details:', error);
+            alert('An error occurred. Please try again.');
+        } finally {
+            fetchBtn.disabled = false;
+            fetchBtn.textContent = 'Fetch';
         }
-    }
-
-    const chatWindow = document.querySelector('.chat-window');
-    const chatInput = document.getElementById('chat-query');
-    const askBtn = document.getElementById('ask-btn');
-
-    const dummyResponses = {
-    "hi": "Hello Sir, how can I help you with your farming today?",
-    "hello": "Hi Sir, how can I help you?",
-    "how are you": "I am an AI assistant, ready to help you with your questions!",
-    "what is your name": "You can call me AgriMind, your smart farming assistant.",
-    "thank you": "You're welcome! Is there anything else I can help you with?",
-    "thanks": "You're welcome! Do you have any other questions?",
-    // --- General Farming Knowledge ---
-    "what is npk": "NPK stands for Nitrogen (N), Phosphorus (P), and Potassium (K). They are the three most important nutrients for healthy plant growth.",
-    "what is crop rotation": "Crop rotation is the practice of planting different crops sequentially on the same plot of land to improve soil health, manage pests, and reduce erosion.",
-    "what is kharif season": "The Kharif season is the monsoon sowing season in India, typically starting in June. Rice, maize, and cotton are common Kharif crops.",
-    "what is rabi season": "The Rabi season is the winter sowing season in India, usually starting in November. Wheat, barley, and mustard are common Rabi crops.",
-    // --- Specific Crop Advice ---
-    "fertilizer for wheat": "For wheat, an NPK ratio of 120:60:40 kg/ha is generally recommended.",
-    "best time to plant rice": "The ideal time for planting Kharif rice is June-July, with the onset of the monsoon.",
-    "water for sugarcane": "Sugarcane is a water-intensive crop, requiring about 1500-2500 mm of water throughout its growing season.",
-    "common disease in cotton": "A common disease in cotton is Boll Rot, which can be managed by ensuring good drainage and proper spacing between plants.",
-    "fertilizer for cotton crop": "Use 150:60:60 NPK per hectare for cotton, with micronutrients like zinc if needed.",
-    "ideal spacing for maize": "Maintain 60 cm between rows and 20 cm between plants for maize.",
-    // --- Soil Health Advice ---
-    "what is soil ph": "Soil pH is a measure of soil acidity or alkalinity. Most crops prefer a neutral pH between 6.0 and 7.5.",
-    "how to increase soil ph": "To increase soil pH (make it less acidic), you can apply materials like lime (calcium carbonate). It's best to get a soil test to know the exact amount needed.",
-    "how to decrease soil ph": "To decrease soil pH (make it less alkaline), you can add organic matter like compost or use acidifying fertilizers like ammonium sulfate.",
-    // --- Fallback Message ---
-    "default": "I'm sorry, I can only answer predefined questions. Try asking about 'fertilizer for wheat' or 'what is crop rotation'."
-    };
-
-    const handleChat = () => {
-        const query = chatInput.value.trim().toLowerCase();
-        if (!query) return;
-
-        const userMessage = document.createElement('div');
-        userMessage.className = 'chat-message user';
-        userMessage.textContent = chatInput.value;
-        chatWindow.appendChild(userMessage);
-
-        let response = dummyResponses.default;
-        for (const key in dummyResponses) {
-            if (query.includes(key)) {
-                response = dummyResponses[key];
-                break;
-            }
-        }
-        
-        setTimeout(() => {
-            const botMessage = document.createElement('div');
-            botMessage.className = 'chat-message bot';
-            botMessage.textContent = response;
-            chatWindow.appendChild(botMessage);
-            chatWindow.scrollTop = chatWindow.scrollHeight;
-        }, 500);
-
-        chatInput.value = '';
-    };
-
-    askBtn.addEventListener('click', handleChat);
-    chatInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleChat();
     });
 
-    populateStates();
-    displayRecentRecommendations();
+    populateStates(); 
+    loadRecentRecommendations(); 
 });
-
-//     populateStates();
-// });
-

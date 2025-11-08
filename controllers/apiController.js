@@ -1,13 +1,39 @@
 const Recommendation = require('../models/Recommendation');
 const Feedback = require('../models/Feedback');
 
+const dummyFarms = [
+    {
+        farmId: 'FARM101',
+        ownerName: 'Ramesh Kumar',
+        soilPh: 6.8,
+        moisture: 55,
+        nitrogen: 90,
+        phosphorus: 45,
+        potassium: 70,
+        temperature: 28,
+        rainfall: 1200,
+        state: 'Punjab',
+        city: 'Amritsar'
+    },
+    {
+        farmId: 'FARM202',
+        ownerName: 'Sita Devi',
+        soilPh: 7.2,
+        moisture: 65,
+        nitrogen: 80,
+        phosphorus: 50,
+        potassium: 75,
+        temperature: 32,
+        rainfall: 1400,
+        state: 'Maharashtra',
+        city: 'Pune'
+    }
+];
+
 const dummyCrops = [
-   { name: 'Rice', reason: 'High rainfall and suitable temperature make it ideal.' },
+    { name: 'Rice', reason: 'High rainfall and suitable temperature make it ideal.' },
     { name: 'Wheat', reason: 'Prefers cooler climates and moderate rainfall.' },
-    { name: 'Cotton', reason: 'Requires high temperature and fertile soil.' },
-    { name: 'Maize', reason: 'Thrives in well-drained soil with moderate rainfall and warm temperatures.' },
-    { name: 'Sugarcane', reason: 'Needs plenty of sunlight, water, and fertile loamy soil.' },
-    { name: 'Soybean', reason: 'Grows well in warm weather and requires moderate rainfall with well-drained soil.' }
+    { name: 'Cotton', reason: 'Requires high temperature and fertile soil.' }
 ];
 
 exports.postRecommendation = async (req, res, next) => {
@@ -17,40 +43,37 @@ exports.postRecommendation = async (req, res, next) => {
         await newRecommendation.save();
         res.status(201).json(newRecommendation);
     } catch (err) {
-        console.error(err);
+        console.log(err);
         res.status(500).json({ message: 'Error saving recommendation' });
     }
 };
 
-
 exports.postFeedback = async (req, res, next) => {
     try {
-        const { name, comment, rating } = req.body;
-
-        if (!name || !comment || !rating || rating < 1 || rating > 5) {
-            return res.status(400).json({ message: 'All fields are required and rating must be between 1 and 5.' });
-        }
-
-        const newFeedback = new Feedback({ name, comment, rating });
+        const { name, message, rating } = req.body;
+        const newFeedback = new Feedback({ name, message, rating });
         await newFeedback.save();
-        res.status(201).json({ message: 'Feedback submitted successfully', feedback: newFeedback });
-    } catch (error) {
+        res.status(201).json({ message: 'Feedback submitted successfully!', feedback: newFeedback });
+    } catch (err) {
+        console.log(err);
         res.status(500).json({ message: 'Error submitting feedback' });
     }
 };
 
-exports.getFeedbacks = async (req, res, next) => {
+exports.getFeedback = async (req, res, next) => {
     try {
         const feedbacks = await Feedback.find().sort({ createdAt: -1 });
         res.status(200).json(feedbacks);
-    } catch (error) {
+    } catch (err) {
+        console.log(err);
         res.status(500).json({ message: 'Error fetching feedback' });
     }
 };
 
-
 exports.getAnalyticsData = async (req, res, next) => {
-    const { year } = req.query;
+    const { year } = req.query; 
+    // console.log(`Fetching analytics data for year: ${year}`);
+    
     const allFarmerGrowth = [
         { label: 'Oct 2024', count: 85, year: '2024' },
         { label: 'Nov 2024', count: 89, year: '2024' },
@@ -83,8 +106,24 @@ exports.getRecentRecommendations = async (req, res, next) => {
     try {
         const recommendations = await Recommendation.find({ userId: req.params.userId }).sort({ createdAt: -1 }).limit(3);
         res.status(200).json(recommendations);
+    } catch (err) { 
+        console.log(err);
+        res.status(500).json({ 
+        message: 'Error fetching history' }); }
+};
+
+exports.getFarmDataById = async (req, res, next) => {
+    try {
+        const farmIdToFind = req.params.farmId.toUpperCase(); 
+        const farm = dummyFarms.find(f => f.farmId === farmIdToFind);
+
+        if (farm) {
+            res.status(200).json(farm);
+        } else {
+            res.status(404).json({ message: 'Farm ID not found.' });
+        }
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Error fetching history' });
+        res.status(500).json({ message: 'Server error while fetching farm data.' });
     }
 };

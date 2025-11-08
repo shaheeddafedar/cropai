@@ -1,69 +1,92 @@
 document.addEventListener('DOMContentLoaded', () => {
     const loginModalOverlay = document.getElementById('login-modal-overlay');
     const loginBtn = document.getElementById('login-btn');
-    const registerBtn = document.getElementById('register-btn');
-    const dashboardLink = document.getElementById('dashboard-link');
     const heroCtaBtn = document.getElementById('hero-cta-btn');
-
+    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+    const navLinks = document.getElementById('nav-links');
     const closeModalBtn = document.querySelector('.close-btn');
-    const googleLoginBtn = document.getElementById('google-login-btn');
-    const emailLoginForm = document.getElementById('email-login-form');
-    const phoneLoginForm = document.getElementById('phone-login-form');
-    const phoneSubmitBtn = document.getElementById('phone-submit-btn');
-    const otpGroup = document.querySelector('.otp-group');
 
-    const performLogin = (userId) => {
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('userId', userId);
-        alert('Login successful! Redirecting to your dashboard.');
-        window.location.href = '/dashboard';
+
+    const showLoginModal = () => {
+        loginModalOverlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    };
+    window.showLoginModal = showLoginModal; 
+
+    const hideLoginModal = () => {
+        loginModalOverlay.classList.add('hidden');
+        document.body.style.overflow = '';
     };
 
-    const performLogout = () => {
-        localStorage.clear();
-        alert('You have been logged out.');
-        updateUI();
-        window.location.href = '/';
-    };
 
-    const showLoginModal = () => loginModalOverlay?.classList.remove('hidden');
-    const hideLoginModal = () => loginModalOverlay?.classList.add('hidden');
-
-    const updateUI = () => {
-        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-        if (loginBtn) loginBtn.style.display = isLoggedIn ? 'none' : 'inline-block';
-        if (registerBtn) registerBtn.textContent = isLoggedIn ? 'Logout' : 'Get Started';
-        if (dashboardLink) dashboardLink.style.display = isLoggedIn ? 'block' : 'none';
-        if (heroCtaBtn) heroCtaBtn.href = isLoggedIn ? '/dashboard' : '#';
-    };
-
-    loginBtn?.addEventListener('click', (e) => { e.preventDefault(); showLoginModal(); });
-    registerBtn?.addEventListener('click', (e) => {
+    loginBtn?.addEventListener('click', (e) => {
         e.preventDefault();
-        localStorage.getItem('isLoggedIn') === 'true' ? performLogout() : showLoginModal();
+        showLoginModal();
     });
+    
+   
+
     heroCtaBtn?.addEventListener('click', (e) => {
-        if (localStorage.getItem('isLoggedIn') !== 'true') {
+      
+        const isLoggedIn = !document.getElementById('login-btn');
+        if (!isLoggedIn) {
             e.preventDefault();
             showLoginModal();
         }
     });
-
-    closeModalBtn?.addEventListener('click', hideLoginModal);
-    loginModalOverlay?.addEventListener('click', (e) => { if (e.target === loginModalOverlay) hideLoginModal(); });
-
-    googleLoginBtn?.addEventListener('click', () => performLogin('google_user_' + Date.now()));
-    emailLoginForm?.addEventListener('submit', (e) => { e.preventDefault(); performLogin('email_user_' + Date.now()); });
-    phoneLoginForm?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        if (otpGroup?.classList.contains('hidden')) {
-            otpGroup.classList.remove('hidden');
-            phoneSubmitBtn.textContent = 'Verify OTP';
-            alert('Simulated OTP sent to your phone!');
+    
+    mobileMenuToggle?.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+        const icon = mobileMenuToggle.querySelector('i');
+        if (icon.classList.contains('fa-bars')) {
+            icon.classList.remove('fa-bars');
+            icon.classList.add('fa-times');
         } else {
-            performLogin('phone_user_' + Date.now());
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
         }
     });
     
-    updateUI();
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', () => {
+            navLinks.classList.remove('active');
+            const icon = mobileMenuToggle.querySelector('i');
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
+        });
+    });
+
+    closeModalBtn?.addEventListener('click', hideLoginModal);
+    
+    loginModalOverlay?.addEventListener('click', (e) => {
+        if (e.target === loginModalOverlay) hideLoginModal();
+    });
+    
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !loginModalOverlay.classList.contains('hidden')) {
+            hideLoginModal();
+        }
+    });
+
+    const animateOnScroll = () => {
+        const elements = document.querySelectorAll('.feature-card, .testimonial-card, .stat-item');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        elements.forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(el);
+        });
+    };
+    
+    animateOnScroll();
 });

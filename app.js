@@ -1,58 +1,86 @@
+
 const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
-
-const MONGO_URI = 'mongodb+srv://CROPAI:CROPAI123@database.lmlg9ez.mongodb.net/CROPAI?retryWrites=true&w=majority&appName=database';
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
+const flash = require('connect-flash');
 
 const pageRouter = require('./routes/pageRouter');
 const apiRouter = require('./routes/apiRouter');
+const authRouter = require('./routes/auth'); 
 const errorController = require('./controllers/errorController');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const MONGO_URI = 'mongodb+srv://CROPAI:CROPAI123@database.lmlg9ez.mongodb.net/CROPAI?retryWrites=true&w=majority&appName=database';
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
-app.use(express.json()); 
-app.use(express.urlencoded({ extended: false })); 
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(session({
+    secret: 'a_very_strong_secret_key_for_AgriMind',
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: MONGO_URI }),
+    cookie: {
+        maxAge: 1000 * 60 * 60 * 24,
+    },
+}));
 
+app.use(flash());
+
+app.use((req, res, next) => {
+    res.locals.isLoggedIn = req.session.isLoggedIn || false;
+    res.locals.user = req.session.user || null;
+    
+    const errorMessages = req.flash('error');
+    res.locals.errorMessage = errorMessages.length > 0 ? errorMessages[0] : null;
+    
+    next();
+});
+
+app.use(pageRouter);
 app.use('/api', apiRouter);
-app.use('/', pageRouter);
-
+app.use(authRouter);
 
 app.use(errorController.get404);
 
 mongoose.connect(MONGO_URI)
     .then(() => {
-        console.log("Successfully connected to MongoDB.");
+        console.log("✅ MongoDB Connected Successfully");
         app.listen(PORT, () => {
-            console.log(`Server is running on http://localhost:${PORT}`);
+            console.log(`🚀 Server running on http://localhost:${PORT}`);
         });
     })
-    .catch(err => {
-        console.error("❌ Error while connecting to the database:", err);
+    .catch((err) => {
+        console.error("❌ Error connecting to MongoDB:", err);
     });
 
 
+
+
     
-// Windows:
+    
+// // Windows:
 
-// Open terminal (CMD or PowerShell)
+// // Open terminal (CMD or PowerShell)
 
-// Run:
+// // Run:
 
-// netstat -ano | findstr :3000
-
-
-// You'll get a list like:
-
-// TCP    127.0.0.1:3000    ...   PID:12345
+// // netstat -ano | findstr :3000
 
 
-// Kill the process:
+// // You'll get a list like:
 
-// taskkill /PID 12345 /F
+// // TCP    127.0.0.1:3000    ...   PID:12345
+
+
+// // Kill the process:
+
+// // taskkill /PID 12345 /F
